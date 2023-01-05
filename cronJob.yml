@@ -1,0 +1,36 @@
+kind: CronJob
+apiVersion: batch/v1beta1
+metadata:
+  name: ssl-checker
+  namespace: default
+spec:
+  schedule: '0 0 * * *'
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: ssl-checker
+              image: 'ssl-checker:latest'
+              command:
+                - node
+                - index.js
+              env:
+              - name: NODE_ENV
+                value: production
+              - name: TZ
+                value: Asia/Shanghai
+              - name: HOSTS
+                value: 
+                  www.example1.com,
+                  www.example2.com
+              - name: WEBHOOK
+                value: https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxxxxxx
+              resources:
+                    requests:
+                      cpu: 100m
+                      memory: 128Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          restartPolicy: OnFailure
